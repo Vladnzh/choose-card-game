@@ -1,0 +1,12 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	box-sizing: border-box;
+	}
+
+#root canvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
