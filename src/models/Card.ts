@@ -8,6 +8,9 @@ export default class Card {
     height: number = 100;
     x: number;
     y: number;
+    isActive: boolean;
+    color: string = '#2abf9f';
+    color2: string = '#ffbc1f';
 
     constructor(x: number = 100, y: number = 100, id: number) {
         this.id = id;
