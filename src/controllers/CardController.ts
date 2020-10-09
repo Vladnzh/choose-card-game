@@ -1,5 +1,4 @@
 import { CardControllerType, CardType, ViewType } from '../interfaces';
-import View from '../views/View';
 
 export default class CardController implements CardControllerType {
     model: CardType;
@@ -16,9 +15,9 @@ export default class CardController implements CardControllerType {
     }
 
     public resizeCard(): void {
-        this.model.height = this.model.width = View.htmlCanvas.width * 0.05;
-        this.model.x = (View.htmlCanvas.width / 6) + (this.model.width * 1.5 * this.model.col);
-        this.model.y = (View.htmlCanvas.height / 6) + (this.model.height * 1.5 * this.model.row);
+        this.model.height = Math.floor(this.model.width = this.view.width * 0.05);
+        this.model.x = Math.floor((this.view.width / 6) + (this.model.width * 1.5 * this.model.col));
+        this.model.y = Math.floor((this.view.height / 6) + (this.model.height * 1.5 * this.model.row));
         this.updateCard();
     }
 }

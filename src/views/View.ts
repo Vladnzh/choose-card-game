@@ -1,6 +1,8 @@
 export class View {
     public htmlCanvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
+    public width: number;
+    public height: number;
 
     constructor() {
         this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement;
@@ -16,6 +18,8 @@ export class View {
     public resizeView(): void {
         this.htmlCanvas.width = window.innerWidth;
         this.htmlCanvas.height = window.innerHeight;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
         this.redraw();
     }
 }
