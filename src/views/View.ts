@@ -1,6 +1,6 @@
-export default class View {
-    htmlCanvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
+export class View {
+    public htmlCanvas: HTMLCanvasElement;
+    public context: CanvasRenderingContext2D;
 
     constructor() {
         this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement;
@@ -19,3 +19,5 @@ export default class View {
         this.redraw();
     }
 }
+
+export default new View()
