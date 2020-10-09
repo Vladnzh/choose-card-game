@@ -39,13 +39,15 @@ export class Controller {
     }
 
     protected createAllCards(): void {
-        for (let i = 0; i < 5; i++) {
-            this.createCard(i * 200, 100, i);
+        for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 5; i++) {
+                this.createCard(i * 200, j * 200, i, j);
+            }
         }
     }
 
-    protected createCard(x: number, y: number, id: number): void {
-        const card = new Card(x, y, id);
+    protected createCard(x: number, y: number, col: number, row: number): void {
+        const card = new Card(x, y, col, row);
         const cardController = new CardController(this.view, card);
         cardController.updateCard();
         this.cards.push(cardController);
