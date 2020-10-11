@@ -1,4 +1,6 @@
-export class View {
+import { ViewType } from '../interfaces';
+
+export class View implements ViewType {
     public htmlCanvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
     public width: number;
@@ -11,8 +13,11 @@ export class View {
 
     protected redraw(): void {
         this.context.strokeStyle = 'blue';
-        this.context.lineWidth = 5;
-        this.context.strokeRect(0, 0, window.innerWidth, window.innerHeight);
+        let grd = this.context.createLinearGradient(0, 0, this.width / 1.1, 0);
+        grd.addColorStop(0, '#fc4a1a');
+        grd.addColorStop(1, '#f7b733');
+        this.context.fillStyle = grd;
+        this.context.fillRect(0, 0, this.width, this.height);
     }
 
     public resizeView(): void {
@@ -24,4 +29,4 @@ export class View {
     }
 }
 
-export default new View()
+export default new View();

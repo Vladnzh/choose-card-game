@@ -1,8 +1,8 @@
-import Controller from 'controllers/Controller';
+import MainController from './controllers/MainController';
 import './styles.css';
 
 const entryPoint = () => {
-    Controller.startGame();
+    MainController.startGame();
 };
 
 window.onload = entryPoint;
