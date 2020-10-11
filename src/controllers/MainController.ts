@@ -61,7 +61,7 @@ export class MainController implements MainControllerType {
 
     protected createAllImages(): void {
         const amountCards = 20;
-        for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
             for (let i = 0; i < amountCards / 2; i++) {
                 this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
             }
@@ -111,7 +111,7 @@ export class MainController implements MainControllerType {
         }, this);
     }
 
-    startGame() {
+    public startGame() {
         this.initialize();
     }
 }
