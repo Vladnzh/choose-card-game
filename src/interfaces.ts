@@ -11,4 +11,8 @@ export type SelectedСardType = {
     id: string;
     imgId: number;
 };
+export type ImageType = {
+    imgId: number,
+    imgSrc: string
+};
 

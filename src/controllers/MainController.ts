@@ -1,20 +1,28 @@
 import _ from 'lodash';
 import CardController from '../controllers/CardController';
-import { CardControllerType, MainControllerType, SelectedСardType, ViewType } from '../interfaces';
+import { CardControllerType, ImageType, MainControllerType, SelectedСardType, ViewType } from '../interfaces';
 import Card from '../models/Card';
 import View from '../views/View';
 
-export class MainController implements MainControllerType{
-    view: ViewType;
-    imageIds: Array<number> = [];
-    selectedСards: Array<SelectedСardType> = [];
-    cards: Array<CardControllerType> = [];
+export class MainController implements MainControllerType {
+    protected view: ViewType;
+    protected images: Array<ImageType> = [];
+    protected selectedСards: Array<SelectedСardType> = [];
+    protected cards: Array<CardControllerType> = [];
+    protected imageSources: Array<string> = ['../../images/1.jpg', '../../images/2.jpg', '../../images/3.jpg',
+                                             '../../images/4.jpg', '../../images/5.jpg', '../../images/6.jpg',
+                                             '../../images/7.jpg', '../../images/8.jpg', '../../images/9.jpg',
+                                             '../../images/10.jpg', '../../images/11.jpg', '../../images/12.jpg',
+                                             '../../images/13.jpg', '../../images/14.jpg', '../../images/15.jpg',
+                                             '../../images/16.jpg', '../../images/17.jpg', '../../images/18.jpg',
+                                             '../../images/19.jpg', '../../images/20.jpg'];
 
     constructor(View: ViewType) {
         this.view = View;
     }
 
     protected initialize(): void {
+        _.shuffle(this.imageSources);
         this.createAllImages();
         this.createAllCards();
         this.clickListener();
@@ -55,15 +63,15 @@ export class MainController implements MainControllerType{
         const amountCards = 20;
         for (let i = 0; i < 2; i++) {
             for (let i = 0; i < amountCards / 2; i++) {
-                this.imageIds.push(i);
+                this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
             }
         }
-        this.imageIds = _.shuffle(this.imageIds);
+        this.images = _.shuffle(this.images);
     }
 
     protected createCard(x: number, y: number, col: number, row: number): void {
-        const imgId = this.imageIds.pop();
-        const card = new Card(x, y, col, row, imgId);
+        const image = this.images.pop();
+        const card = new Card(x, y, col, row, image);
         const cardController = new CardController(this.view, card);
         this.cards.push(cardController);
         cardController.updateCard();
@@ -74,10 +82,11 @@ export class MainController implements MainControllerType{
             if (y > cardController.model.y && y < cardController.model.y + cardController.model.height
                 && x > cardController.model.x && x < cardController.model.x + cardController.model.width) {
                 this.cards.forEach((cardController: CardControllerType) => {
-                    const doLock = this.selectedСards.find(
-                        (card: SelectedСardType) => card.imgId === cardController.model.imgId);
-                    if (doLock && this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
-                        this.selectedСards[0].id !== this.selectedСards[1].id) {
+                    const canLock = this.selectedСards.find(
+                        (card: SelectedСardType) => card.imgId === cardController.model.imgId) &&
+                                    this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
+                                    this.selectedСards[0].id !== this.selectedСards[1].id;
+                    if (canLock) {
                         cardController.model.isLock = true;
                     }
                     cardController.updateCard();

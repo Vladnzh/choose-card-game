@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { CardType } from '../interfaces';
+import { CardType, ImageType } from '../interfaces';
 
 export default class Card implements CardType {
     public id: string;
@@ -16,14 +16,14 @@ export default class Card implements CardType {
     public color: string = '#2abf9f';
     public color2: string = '#ffffff';
 
-    constructor(x: number = 100, y: number = 150, col: number, row: number, imgId: number) {
+    constructor(x: number = 100, y: number = 150, col: number, row: number, image: ImageType) {
         this.id = uuidv4();
         this.col = col;
         this.row = row;
         this.x = x;
         this.y = y;
-        this.imgId = imgId;
+        this.imgId = image.imgId;
         this.img = new Image();
-        this.img.src = 'https://mdn.mozillademos.org/files/5395/backdrop.png';
+        this.img.src = image.imgSrc;
     }
 }
