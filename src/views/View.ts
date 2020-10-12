@@ -5,6 +5,8 @@ export class View implements ViewType {
     public context: CanvasRenderingContext2D;
     public width: number;
     public height: number;
+    public gradientColor1: string = '#fc4a1a';
+    public gradientColor2: string = '#f7b733';
 
     constructor() {
         this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement;
@@ -12,10 +14,9 @@ export class View implements ViewType {
     }
 
     protected redraw(): void {
-        this.context.strokeStyle = 'blue';
-        let grd = this.context.createLinearGradient(0, 0, this.width / 1.1, 0);
-        grd.addColorStop(0, '#fc4a1a');
-        grd.addColorStop(1, '#f7b733');
+        const grd = this.context.createLinearGradient(0, 0, this.width / 1.1, 0);
+        grd.addColorStop(0, this.gradientColor1);
+        grd.addColorStop(1, this.gradientColor2);
         this.context.fillStyle = grd;
         this.context.fillRect(0, 0, this.width, this.height);
     }

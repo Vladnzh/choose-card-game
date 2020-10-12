@@ -13,17 +13,16 @@ export default class Card implements CardType {
     public img: HTMLImageElement;
     public isActive: boolean = false;
     public isLock: boolean = false;
-    public color: string = '#2abf9f';
-    public color2: string = '#ffffff';
+    public color: string = '#e3e0d4';
 
-    constructor(x: number = 100, y: number = 150, col: number, row: number, image: ImageType) {
+    constructor(x: number, y: number, col: number, row: number, image: ImageType) {
         this.id = uuidv4();
         this.col = col;
         this.row = row;
         this.x = x;
         this.y = y;
-        this.imgId = image.imgId;
         this.img = new Image();
+        this.imgId = image.imgId;
         this.img.src = image.imgSrc;
     }
 }
