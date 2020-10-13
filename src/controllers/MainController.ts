@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import * as gsap from 'gsap';
 import CardController from '../controllers/CardController';
 import {
     CardControllerType,
@@ -37,6 +38,7 @@ export class MainController implements MainControllerType {
         this.createAllImages();
         this.createAllCards();
         this.clickListener();
+        this.mouseMoveListener();
         this.resizeListener();
         this.resize();
     }
@@ -46,10 +48,19 @@ export class MainController implements MainControllerType {
             const x = event.pageX;
             const y = event.pageY;
             this.checkCard(x, y);
+            this.checkPopup(x, y);
             if (this.checkWin()) {
                 this.showWinPopup();
             }
         }, false);
+    }
+
+    protected mouseMoveListener(): void {
+        window.addEventListener('mousemove',  _.throttle((event) => {
+            const x = event.pageX;
+            const y = event.pageY;
+           this.checkMouseOver(x, y);
+        }, 300));
     }
 
     protected resizeListener(): void {
@@ -66,7 +77,7 @@ export class MainController implements MainControllerType {
 
     protected showWinPopup(): void {
         this.winPopup.model.canShow = true;
-        this.winPopup.redrawPopup()
+        this.winPopup.redrawPopup();
     }
 
     protected hideWinPopup(): void {
@@ -105,6 +116,25 @@ export class MainController implements MainControllerType {
         cardController.redrawCard();
     }
 
+    protected resetGame(): void {
+        this.initialize();
+    }
+
+    protected checkMouseOver(x: number, y: number): void {
+        this.cards.forEach((cardController: CardControllerType) => {
+            const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
+                           && x > cardController.model.x && x < cardController.model.x + cardController.model.width;
+            const element = document.getElementById('root');
+            if (target) {
+                element.style.cursor = 'pointer';
+                console.log('pointer');
+            } else {
+                element.style.cursor = 'auto';
+                console.log('auto');
+            }
+        });
+    }
+
     protected checkCard(x: number, y: number): void {
         this.cards.forEach((cardController: CardControllerType) => {
             const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
@@ -112,7 +142,7 @@ export class MainController implements MainControllerType {
             if (target) {
                 const thereIsMatch = this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
                                      this.selectedСards[0]?.id !== this.selectedСards[1]?.id;
-                if (thereIsMatch && this.winPopup.model.missCount !== 0) {
+                if (thereIsMatch && this.winPopup.model.missCount !== 0 && !cardController.model.isLock) {
                     this.winPopup.model.missCount -= 1;
                 }
                 this.cards.forEach((cardController: CardControllerType) => {
@@ -123,7 +153,7 @@ export class MainController implements MainControllerType {
                     }
                     cardController.redrawCard();
                 });
-                if (this.selectedСards.length === 2) {
+                if (this.selectedСards.length === 2 && !cardController.model.isLock) {
                     this.selectedСards = [];
                     this.cards.forEach((cardController: CardControllerType) => {
                         if (!cardController.model.isLock) {
@@ -142,6 +172,16 @@ export class MainController implements MainControllerType {
                 cardController.redrawCard();
             }
         }, this);
+    }
+
+    protected checkPopup(x: number, y: number): void {
+        const target = y > this.winPopup.model.buttonY && y < this.winPopup.model.buttonY +
+                       this.winPopup.model.buttonHeight
+                       && x > this.winPopup.model.buttonX && x < this.winPopup.model.buttonX +
+                       this.winPopup.model.buttonWidth;
+        if (target) {
+            this.resetGame();
+        }
     }
 
     protected checkWin(): boolean {

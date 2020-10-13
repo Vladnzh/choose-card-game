@@ -3,6 +3,10 @@ import { WinPopupType } from '../interfaces';
 export default class WinPopup implements WinPopupType {
     public x: number;
     public y: number;
+    public buttonX: number;
+    public buttonY: number;
+    public buttonWidth: number;
+    public buttonHeight: number;
     public width: number;
     public height: number;
     public color: string = '#e3e0d4';
@@ -12,9 +16,6 @@ export default class WinPopup implements WinPopupType {
     public colorGreen: string = '#68b55b';
     public colorYellow: string = '#b5b15b';
     public colorRed: string = '#b55b5b';
-
-    constructor() {
-    }
 
     public getInformationColor(): string {
         if (this.missCount < 11) {
