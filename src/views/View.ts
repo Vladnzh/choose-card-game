@@ -13,7 +13,7 @@ export class View implements ViewType {
         this.context = this.htmlCanvas.getContext('2d');
     }
 
-    protected redraw(): void {
+    public redraw(): void {
         const grd = this.context.createLinearGradient(0, 0, this.width / 1.1, 0);
         grd.addColorStop(0, this.gradientColor1);
         grd.addColorStop(1, this.gradientColor2);
@@ -28,6 +28,7 @@ export class View implements ViewType {
         this.height = window.innerHeight;
         this.redraw();
     }
+
 }
 
 export default new View();

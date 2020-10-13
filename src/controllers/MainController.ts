@@ -9,6 +9,7 @@ import {
 } from '../interfaces';
 import Card from '../models/Card';
 import WinPopup from '../models/WinPopup';
+import { getImagesSources } from '../utils';
 import View from '../views/View';
 import WinPopupController from './WinPopupController';
 
@@ -19,20 +20,13 @@ export class MainController implements MainControllerType {
     protected selectedСards: Array<SelectedСardType> = [];
     protected cards: Array<CardControllerType> = [];
     protected amountCards: number = 20;
-    protected imageSources: Array<string> = ['../../images/1.jpg', '../../images/2.jpg', '../../images/3.jpg',
-                                             '../../images/4.jpg', '../../images/5.jpg', '../../images/6.jpg',
-                                             '../../images/7.jpg', '../../images/8.jpg', '../../images/9.jpg',
-                                             '../../images/10.jpg', '../../images/11.jpg', '../../images/12.jpg',
-                                             '../../images/13.jpg', '../../images/14.jpg', '../../images/15.jpg',
-                                             '../../images/16.jpg', '../../images/17.jpg', '../../images/18.jpg',
-                                             '../../images/19.jpg', '../../images/20.jpg'];
+    protected imageSources: Array<string> = [];
 
     constructor(View: ViewType) {
         this.view = View;
     }
 
     protected initialize(): void {
-        _.shuffle(this.imageSources);
         this.createWinPopup();
         this.createAllImages();
         this.createAllCards();
@@ -99,6 +93,7 @@ export class MainController implements MainControllerType {
     }
 
     protected createAllImages(): void {
+        this.imageSources = _.shuffle(getImagesSources());
         for (let j = 0; j < 2; j++) {
             for (let i = 0; i < this.amountCards / 2; i++) {
                 this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
@@ -116,7 +111,15 @@ export class MainController implements MainControllerType {
     }
 
     protected resetGame(): void {
-        this.initialize();
+        this.cards = [];
+        this.images = [];
+        this.selectedСards = [];
+        this.winPopup.model.canShow = false;
+        this.createAllImages();
+        this.createAllCards();
+        this.view.resizeView();
+        this.winPopup.resizePopup();
+        this.cards.map(cardsController => cardsController.resizeCard());
     }
 
     protected checkMouseOver(x: number, y: number): void {
