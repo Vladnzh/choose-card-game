@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import * as gsap from 'gsap';
 import CardController from '../controllers/CardController';
 import {
     CardControllerType,
@@ -56,11 +55,11 @@ export class MainController implements MainControllerType {
     }
 
     protected mouseMoveListener(): void {
-        window.addEventListener('mousemove',  _.throttle((event) => {
+        window.addEventListener('mousemove', _.throttle((event) => {
             const x = event.pageX;
             const y = event.pageY;
-           this.checkMouseOver(x, y);
-        }, 300));
+            this.checkMouseOver(x, y);
+        }, 50));
     }
 
     protected resizeListener(): void {
@@ -121,18 +120,22 @@ export class MainController implements MainControllerType {
     }
 
     protected checkMouseOver(x: number, y: number): void {
-        this.cards.forEach((cardController: CardControllerType) => {
-            const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
-                           && x > cardController.model.x && x < cardController.model.x + cardController.model.width;
-            const element = document.getElementById('root');
-            if (target) {
-                element.style.cursor = 'pointer';
-                console.log('pointer');
-            } else {
-                element.style.cursor = 'auto';
-                console.log('auto');
-            }
-        });
+        const element = document.getElementById('root');
+        const target = this.cards.find(
+            cardController => y > cardController.model.y
+                              && y < cardController.model.y + cardController.model.height
+                              && x > cardController.model.x
+                              && x < cardController.model.x + cardController.model.width);
+        if (!this.winPopup.model.canShow && target) {
+            element.style.cursor = 'pointer';
+        } else if (y > this.winPopup.model.buttonY
+                   && y < this.winPopup.model.buttonY + this.winPopup.model.buttonHeight
+                   && x > this.winPopup.model.buttonX
+                   && x < this.winPopup.model.buttonX + this.winPopup.model.buttonWidth) {
+            element.style.cursor = 'pointer';
+        } else {
+            element.style.cursor = 'auto';
+        }
     }
 
     protected checkCard(x: number, y: number): void {
