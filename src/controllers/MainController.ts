@@ -4,22 +4,27 @@ import {
     CardControllerType,
     ImageType,
     MainControllerType,
-    SelectedСardType,
+    SelectedСardType, StartPopupControllerType,
     ViewType, WinPopupControllerType,
 } from '../interfaces';
 import Card from '../models/Card';
+import StartPopup from '../models/StartPopup';
 import WinPopup from '../models/WinPopup';
-import { getImagesSources } from '../utils';
+import { BUTTONS_NAME, getImagesSources } from '../utils';
 import View from '../views/View';
+import StartPopupController from './StartPopupController';
 import WinPopupController from './WinPopupController';
 
 export class MainController implements MainControllerType {
+    private row: number;
+    private col: number;
     protected view: ViewType;
     protected winPopup: WinPopupControllerType;
+    protected startPopup: StartPopupControllerType;
     protected images: Array<ImageType> = [];
     protected selectedСards: Array<SelectedСardType> = [];
     protected cards: Array<CardControllerType> = [];
-    protected amountCards: number = 20;
+    protected amountCards: number;
     protected imageSources: Array<string> = [];
 
     constructor(View: ViewType) {
@@ -27,12 +32,41 @@ export class MainController implements MainControllerType {
     }
 
     protected initialize(): void {
+        this.createStartPopup();
+        this.showStartPopup();
         this.createWinPopup();
-        this.createAllImages();
-        this.createAllCards();
         this.clickListener();
         this.mouseMoveListener();
         this.resizeListener();
+        this.resize();
+    }
+
+    protected setLevel(level: string): void {
+        switch (level) {
+            case BUTTONS_NAME.EASY_BUTTON: {
+                this.row = 3;
+                this.col = 4;
+                break;
+            }
+            case BUTTONS_NAME.NORMAL_BUTTON: {
+                this.row = 4;
+                this.col = 4;
+                break;
+            }
+            case BUTTONS_NAME.HARD_BUTTON: {
+                this.row = 4;
+                this.col = 5;
+                break;
+            }
+            default : {
+                this.row = 4;
+                this.col = 5;
+            }
+        }
+        this.amountCards = this.row * this.col;
+        this.hideStartPopup();
+        this.createAllImages();
+        this.createAllCards();
         this.resize();
     }
 
@@ -40,10 +74,14 @@ export class MainController implements MainControllerType {
         window.addEventListener('click', (event) => {
             const x = event.pageX;
             const y = event.pageY;
-            this.checkCard(x, y);
-            this.checkPopup(x, y);
-            if (this.checkWin()) {
-                this.showWinPopup();
+            if (this.startPopup.model.isVisible) {
+                this.checkStartPopup(x, y, 'click');
+            } else {
+                this.checkCard(x, y);
+                this.checkWinPopup(x, y, 'click');
+                if (this.checkWin() && !this.startPopup.model.isVisible) {
+                    this.showWinPopup();
+                }
             }
         }, false);
     }
@@ -62,24 +100,37 @@ export class MainController implements MainControllerType {
 
     protected resize(): void {
         this.view.resizeView();
-        this.cards.forEach((cardController) => {
-            cardController.resizeCard();
-        });
-        this.winPopup.resizePopup();
+        if (this.startPopup.model.isVisible) {
+            this.startPopup.resizePopup();
+        } else {
+            this.cards.forEach((cardController) => {
+                cardController.resizeCard();
+            });
+            this.winPopup.resizePopup();
+        }
     }
 
     protected showWinPopup(): void {
-        this.winPopup.model.canShow = true;
+        this.winPopup.model.isVisible = true;
         this.winPopup.redrawPopup();
     }
 
     protected hideWinPopup(): void {
-        this.winPopup.model.canShow = false;
+        this.winPopup.model.isVisible = false;
+    }
+
+    protected showStartPopup(): void {
+        this.startPopup.model.isVisible = true;
+        this.startPopup.redrawPopup();
+    }
+
+    protected hideStartPopup(): void {
+        this.startPopup.model.isVisible = false;
     }
 
     protected createAllCards(): void {
-        for (let j = 0; j < 4; j++) {
-            for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < this.row; j++) {
+            for (let i = 0; i < this.col; i++) {
                 let x = i * 200;
                 let y = j * 200;
                 this.createCard(x, y, i, j);
@@ -92,6 +143,11 @@ export class MainController implements MainControllerType {
         this.winPopup = new WinPopupController(this.view, winPopupModel);
     }
 
+    protected createStartPopup(): void {
+        const startPopupModel = new StartPopup();
+        this.startPopup = new StartPopupController(this.view, startPopupModel);
+    }
+
     protected createAllImages(): void {
         this.imageSources = _.shuffle(getImagesSources());
         for (let j = 0; j < 2; j++) {
@@ -99,7 +155,6 @@ export class MainController implements MainControllerType {
                 this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
             }
         }
-        this.images = _.shuffle(this.images);
     }
 
     protected createCard(x: number, y: number, col: number, row: number): void {
@@ -114,30 +169,21 @@ export class MainController implements MainControllerType {
         this.cards = [];
         this.images = [];
         this.selectedСards = [];
-        this.winPopup.model.canShow = false;
-        this.createAllImages();
-        this.createAllCards();
+        this.hideWinPopup();
+        this.showStartPopup();
         this.view.resizeView();
-        this.winPopup.resizePopup();
+        this.startPopup.redrawPopup();
         this.cards.map(cardsController => cardsController.resizeCard());
     }
 
     protected checkMouseOver(x: number, y: number): void {
-        const element = document.getElementById('root');
-        const target = this.cards.find(
-            cardController => y > cardController.model.y
-                              && y < cardController.model.y + cardController.model.height
-                              && x > cardController.model.x
-                              && x < cardController.model.x + cardController.model.width);
-        if (!this.winPopup.model.canShow && target) {
-            element.style.cursor = 'pointer';
-        } else if (y > this.winPopup.model.buttonY
-                   && y < this.winPopup.model.buttonY + this.winPopup.model.buttonHeight
-                   && x > this.winPopup.model.buttonX
-                   && x < this.winPopup.model.buttonX + this.winPopup.model.buttonWidth) {
-            element.style.cursor = 'pointer';
+        const canvas = this.view.getCanvas();
+        const targetCard = !this.winPopup.model.isVisible && !this.startPopup.model.isVisible &&
+                           this.cards.find(cardController => cardController.checkMouseOver(x, y));
+        if (this.checkWinPopup(x, y, 'mousemove') || this.checkStartPopup(x, y, 'mousemove') || targetCard) {
+            canvas.style.cursor = 'pointer';
         } else {
-            element.style.cursor = 'auto';
+            canvas.style.cursor = 'auto';
         }
     }
 
@@ -180,14 +226,20 @@ export class MainController implements MainControllerType {
         }, this);
     }
 
-    protected checkPopup(x: number, y: number): void {
-        const target = y > this.winPopup.model.buttonY && y < this.winPopup.model.buttonY +
-                       this.winPopup.model.buttonHeight
-                       && x > this.winPopup.model.buttonX && x < this.winPopup.model.buttonX +
-                       this.winPopup.model.buttonWidth;
-        if (target) {
+    protected checkWinPopup(x: number, y: number, event: string): boolean {
+        const target = this.winPopup.checkButton(x, y);
+        if (event == 'click' && target) {
             this.resetGame();
         }
+        return target;
+    }
+
+    protected checkStartPopup(x: number, y: number, event: string): string {
+        const level = this.startPopup.checkButtons(x, y);
+        if (event === 'click' && level) {
+            this.setLevel(level);
+        }
+        return level;
     }
 
     protected checkWin(): boolean {

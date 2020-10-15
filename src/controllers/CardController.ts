@@ -26,5 +26,13 @@ export default class CardController implements CardControllerType {
             Math.floor((this.view.height / 3 - this.model.height) + (this.model.height * 1.3 * this.model.row));
         this.redrawCard();
     }
+
+    public checkMouseOver(x: number, y: number): boolean {
+        return y > this.model.y
+               && y < this.model.y + this.model.height
+               && x > this.model.x
+               && x < this.model.x + this.model.width &&
+               !this.model.isLock;
+    }
 }
 

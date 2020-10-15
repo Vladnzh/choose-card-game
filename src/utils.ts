@@ -8,3 +8,9 @@ export const getImagesSources = (): Array<string> => ['../../images/1.jpg', '../
                                                       '../../images/16.jpg', '../../images/17.jpg',
                                                       '../../images/18.jpg',
                                                       '../../images/19.jpg', '../../images/20.jpg'];
+
+export class BUTTONS_NAME {
+    public static EASY_BUTTON: string = 'EASY_BUTTON'
+    public static NORMAL_BUTTON: string = 'NORMAL_BUTTON'
+    public static HARD_BUTTON: string = 'HARD_BUTTON'
+}

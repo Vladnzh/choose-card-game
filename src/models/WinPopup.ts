@@ -10,7 +10,7 @@ export default class WinPopup implements WinPopupType {
     public width: number;
     public height: number;
     public color: string = '#e3e0d4';
-    public canShow: boolean = false;
+    public isVisible: boolean = false;
     public missCount: number = 0;
     public winText: string = 'Congratulations!';
     public colorGreen: string = '#68b55b';

@@ -24,7 +24,6 @@ export default class WinPopupController implements WinPopupControllerType {
         this.model.buttonY = this.model.y + this.model.height / 1.5;
         this.model.buttonWidth = this.model.width / 3;
         this.model.buttonHeight = this.model.height / 7;
-
         this.view.context.strokeStyle = '#dd8236';
         this.view.context.strokeRect(this.model.buttonX, this.model.buttonY,
                                      this.model.buttonWidth, this.model.buttonHeight);
@@ -35,7 +34,7 @@ export default class WinPopupController implements WinPopupControllerType {
     }
 
     public redrawPopup(): void {
-        if (this.model.canShow) {
+        if (this.model.isVisible) {
             this.view.context.fillStyle = this.model.color;
             this.view.context.fillRect(this.model.x, this.model.y, this.model.width, this.model.height);
             this.redrawText();
@@ -51,6 +50,13 @@ export default class WinPopupController implements WinPopupControllerType {
         this.model.y =
             Math.floor((this.view.height / 3 - this.model.height) + (this.model.height * 0.78));
         this.redrawPopup();
+    }
+
+    public checkButton(x: number, y: number): boolean {
+        return y > this.model.buttonY && y < this.model.buttonY +
+               this.model.buttonHeight
+               && x > this.model.buttonX && x < this.model.buttonX +
+               this.model.buttonWidth && this.model.isVisible;
     }
 }
 

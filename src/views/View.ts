@@ -9,8 +9,12 @@ export class View implements ViewType {
     public gradientColor2: string = '#f7b733';
 
     constructor() {
-        this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement;
+        this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement
         this.context = this.htmlCanvas.getContext('2d');
+    }
+
+    public getCanvas():HTMLCanvasElement{
+        return this.htmlCanvas
     }
 
     public redraw(): void {
