@@ -155,6 +155,7 @@ export class MainController implements MainControllerType {
                 this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
             }
         }
+        this.images = _.shuffle(this.images);
     }
 
     protected createCard(x: number, y: number, col: number, row: number): void {
@@ -168,7 +169,9 @@ export class MainController implements MainControllerType {
     protected resetGame(): void {
         this.cards = [];
         this.images = [];
+        this.imageSources = [];
         this.selectedСards = [];
+        this.winPopup.model.missCount = 0;
         this.hideWinPopup();
         this.showStartPopup();
         this.view.resizeView();
