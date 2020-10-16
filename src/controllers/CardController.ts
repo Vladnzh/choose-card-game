@@ -27,6 +27,11 @@ export default class CardController implements CardControllerType {
         this.redrawCard();
     }
 
+    public update(): void {
+        this.model.width -= this.model.width * 1.2 / 60
+        this.model.x += this.model.x * 0.05 / 60
+    }
+
     public checkMouseOver(x: number, y: number): boolean {
         return y > this.model.y
                && y < this.model.y + this.model.height

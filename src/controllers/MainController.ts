@@ -1,3 +1,4 @@
+import { TweenMax } from "gsap";
 import _ from 'lodash';
 import CardController from '../controllers/CardController';
 import {
@@ -222,6 +223,15 @@ export class MainController implements MainControllerType {
                     this.selectedСards.push({ id : cardController.model.id, imgId : cardController.model.imgId });
                     if (!cardController.model.isLock) {
                         cardController.model.isActive = true;
+                        TweenMax.to({  }, 1, {
+                            onUpdate : () => {
+                                cardController.update()
+                                this.view.redraw()
+                                this.cards.forEach((cardController) => {
+                                    cardController.redrawCard();
+                                });
+                            },
+                        });
                     }
                 }
                 cardController.redrawCard();
