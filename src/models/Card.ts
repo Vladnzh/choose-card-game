@@ -13,6 +13,7 @@ export default class Card implements CardType {
     public img: HTMLImageElement;
     public isActive: boolean = false;
     public isLock: boolean = false;
+    public inProgress: boolean = false;
     public color: string = '#e3e0d4';
 
     constructor(x: number, y: number, col: number, row: number, image: ImageType) {

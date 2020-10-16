@@ -1,4 +1,4 @@
-import { TweenMax } from "gsap";
+import { TweenMax } from 'gsap';
 import _ from 'lodash';
 import CardController from '../controllers/CardController';
 import {
@@ -27,6 +27,7 @@ export class MainController implements MainControllerType {
     protected cards: Array<CardControllerType> = [];
     protected amountCards: number;
     protected imageSources: Array<string> = [];
+    protected animationDuration: number = 0.25;
 
     constructor(View: ViewType) {
         this.view = View;
@@ -195,7 +196,7 @@ export class MainController implements MainControllerType {
         this.cards.forEach((cardController: CardControllerType) => {
             const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
                            && x > cardController.model.x && x < cardController.model.x + cardController.model.width;
-            if (target) {
+            if (target && !cardController.model.inProgress) {
                 const thereIsMatch = this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
                                      this.selectedСards[0]?.id !== this.selectedСards[1]?.id;
                 if (thereIsMatch && this.winPopup.model.missCount !== 0 && !cardController.model.isLock) {
@@ -209,34 +210,61 @@ export class MainController implements MainControllerType {
                     }
                     cardController.redrawCard();
                 });
-                if (this.selectedСards.length === 2 && !cardController.model.isLock) {
-                    this.selectedСards = [];
-                    this.cards.forEach((cardController: CardControllerType) => {
-                        if (!cardController.model.isLock) {
-                            cardController.model.isActive = false;
-                        }
-                        cardController.redrawCard();
-                    });
-                    this.winPopup.model.missCount += 1;
-                }
-                if (this.selectedСards.length < 2) {
+                if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id) {
                     this.selectedСards.push({ id : cardController.model.id, imgId : cardController.model.imgId });
-                    if (!cardController.model.isLock) {
-                        cardController.model.isActive = true;
-                        TweenMax.to({  }, 1, {
-                            onUpdate : () => {
-                                cardController.update()
-                                this.view.redraw()
-                                this.cards.forEach((cardController) => {
-                                    cardController.redrawCard();
-                                });
-                            },
+                    if (!cardController.model.isLock && !cardController.model.isActive) {
+                        this.flipCard(cardController);
+                    }
+                }
+                if (this.selectedСards.length === 2 && !cardController.model.isLock) {
+                    if (this.selectedСards[0].imgId !== this.selectedСards[1].imgId) {
+                        this.cards.forEach((cardController: CardControllerType) => {
+                            if (cardController.model.id === this.selectedСards[0].id || cardController.model.id ===
+                                this.selectedСards[1].id) {
+                                TweenMax.delayedCall(1, () => this.flipCard(cardController));
+                            }
                         });
                     }
+                    this.selectedСards = [];
+                    this.winPopup.model.missCount += 1;
                 }
                 cardController.redrawCard();
             }
         }, this);
+    }
+
+    protected flipCard(cardController: CardControllerType): void {
+        const prevX = cardController.model.x;
+        const prevWidth = cardController.model.width;
+        TweenMax.to(cardController.model, this.animationDuration, {
+            inProgress : true,
+            x          : cardController.model.x + cardController.model.width / 2,
+            width      : 0,
+            onUpdate   : () => {
+                this.view.redraw();
+                this.cards.forEach((cardController) => {
+                    cardController.redrawCard();
+                });
+            },
+            onComplete : () => {
+                cardController.model.isActive = !cardController.model.isActive;
+            },
+        });
+        TweenMax.delayedCall(this.animationDuration, () => {
+            TweenMax.to(cardController.model, this.animationDuration, {
+                x          : prevX,
+                width      : prevWidth,
+                onUpdate   : () => {
+                    this.view.redraw();
+                    this.cards.forEach((cardController) => {
+                        cardController.redrawCard();
+                    });
+                },
+                onComplete : () => {
+                    cardController.model.inProgress = false;
+                },
+            });
+        });
     }
 
     protected checkWinPopup(x: number, y: number, event: string): boolean {

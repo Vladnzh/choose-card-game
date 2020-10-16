@@ -37,7 +37,7 @@ export default class CardController implements CardControllerType {
                && y < this.model.y + this.model.height
                && x > this.model.x
                && x < this.model.x + this.model.width &&
-               !this.model.isLock;
+               !this.model.isLock && !this.model.inProgress && !this.model.isActive;
     }
 }
 
