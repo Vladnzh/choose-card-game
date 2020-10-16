@@ -28,6 +28,7 @@ export class MainController implements MainControllerType {
     protected amountCards: number;
     protected imageSources: Array<string> = [];
     protected animationDuration: number = 0.25;
+    protected animationInProgress: boolean = false;
 
     constructor(View: ViewType) {
         this.view = View;
@@ -183,8 +184,10 @@ export class MainController implements MainControllerType {
 
     protected checkMouseOver(x: number, y: number): void {
         const canvas = this.view.getCanvas();
-        const targetCard = !this.winPopup.model.isVisible && !this.startPopup.model.isVisible &&
-                           this.cards.find(cardController => cardController.checkMouseOver(x, y));
+        const targetCard = !this.winPopup.model.isVisible
+                           && !this.startPopup.model.isVisible
+                           && this.cards.find(cardController => cardController.checkMouseOver(x, y))
+                           && !this.animationInProgress && this.selectedСards.length !== 2;
         if (this.checkWinPopup(x, y, 'mousemove') || this.checkStartPopup(x, y, 'mousemove') || targetCard) {
             canvas.style.cursor = 'pointer';
         } else {
@@ -196,7 +199,7 @@ export class MainController implements MainControllerType {
         this.cards.forEach((cardController: CardControllerType) => {
             const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
                            && x > cardController.model.x && x < cardController.model.x + cardController.model.width;
-            if (target && !cardController.model.inProgress) {
+            if (target && this.selectedСards.length !== 2) {
                 const thereIsMatch = this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
                                      this.selectedСards[0]?.id !== this.selectedСards[1]?.id;
                 if (thereIsMatch && this.winPopup.model.missCount !== 0 && !cardController.model.isLock) {
@@ -208,9 +211,9 @@ export class MainController implements MainControllerType {
                     if (canLock) {
                         cardController.model.isLock = true;
                     }
-                    cardController.redrawCard();
                 });
-                if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id) {
+                if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id &&
+                    !this.animationInProgress) {
                     this.selectedСards.push({ id : cardController.model.id, imgId : cardController.model.imgId });
                     if (!cardController.model.isLock && !cardController.model.isActive) {
                         this.flipCard(cardController);
@@ -221,11 +224,11 @@ export class MainController implements MainControllerType {
                         this.cards.forEach((cardController: CardControllerType) => {
                             if (cardController.model.id === this.selectedСards[0].id || cardController.model.id ===
                                 this.selectedСards[1].id) {
-                                TweenMax.delayedCall(1, () => this.flipCard(cardController));
+                                TweenMax.delayedCall(0.8, () => this.flipCard(cardController));
                             }
                         });
                     }
-                    this.selectedСards = [];
+                    TweenMax.delayedCall(0.8, () => this.selectedСards = []);
                     this.winPopup.model.missCount += 1;
                 }
                 cardController.redrawCard();
@@ -236,7 +239,9 @@ export class MainController implements MainControllerType {
     protected flipCard(cardController: CardControllerType): void {
         const prevX = cardController.model.x;
         const prevWidth = cardController.model.width;
-        TweenMax.to(cardController.model, this.animationDuration, {
+        this.animationInProgress = true;
+        const duration = cardController.model.isActive ? this.animationDuration / 2 : this.animationDuration;
+        TweenMax.to(cardController.model, duration, {
             inProgress : true,
             x          : cardController.model.x + cardController.model.width / 2,
             width      : 0,
@@ -250,8 +255,8 @@ export class MainController implements MainControllerType {
                 cardController.model.isActive = !cardController.model.isActive;
             },
         });
-        TweenMax.delayedCall(this.animationDuration, () => {
-            TweenMax.to(cardController.model, this.animationDuration, {
+        TweenMax.delayedCall(duration, () => {
+            TweenMax.to(cardController.model, duration, {
                 x          : prevX,
                 width      : prevWidth,
                 onUpdate   : () => {
@@ -261,6 +266,7 @@ export class MainController implements MainControllerType {
                     });
                 },
                 onComplete : () => {
+                    this.animationInProgress = false;
                     cardController.model.inProgress = false;
                 },
             });
