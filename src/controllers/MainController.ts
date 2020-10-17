@@ -187,7 +187,7 @@ export class MainController implements MainControllerType {
         const targetCard = !this.winPopup.model.isVisible
                            && !this.startPopup.model.isVisible
                            && this.cards.find(cardController => cardController.checkMouseOver(x, y))
-                           && !this.animationInProgress && this.selectedСards.length !== 2;
+                           && this.selectedСards.length !== 2;
         if (this.checkWinPopup(x, y, 'mousemove') || this.checkStartPopup(x, y, 'mousemove') || targetCard) {
             canvas.style.cursor = 'pointer';
         } else {
@@ -212,8 +212,7 @@ export class MainController implements MainControllerType {
                         cardController.model.isLock = true;
                     }
                 });
-                if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id &&
-                    !this.animationInProgress) {
+                if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id) {
                     this.selectedСards.push({ id : cardController.model.id, imgId : cardController.model.imgId });
                     if (!cardController.model.isLock && !cardController.model.isActive) {
                         this.flipCard(cardController);
