@@ -1,6 +1,7 @@
 export default class AbstractView {
     public htmlCanvas: HTMLCanvasElement;
     public context: CanvasRenderingContext2D;
+    public backgroundStyle: CanvasGradient | string;
     public width: number;
     public height: number;
 
@@ -14,6 +15,8 @@ export default class AbstractView {
     }
 
     public redraw(): void {
+        this.context.fillStyle = this.backgroundStyle;
+        this.context.fillRect(0, 0, this.width, this.height);
     }
 
     public resizeView(): void {
