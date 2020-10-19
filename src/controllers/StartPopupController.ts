@@ -1,11 +1,13 @@
-import { StartPopupControllerType, StartPopupType, ViewType } from '../interfaces';
+import AbstractPopupController from '../abstract/controllers/AbstractPopupController';
+import { StartPopupType, ViewType } from '../interfaces';
 import { BUTTONS_NAME } from '../utils';
 
-export default class StartPopupController implements StartPopupControllerType {
+export default class StartPopupController extends AbstractPopupController {
     public model: StartPopupType;
     public view: ViewType;
 
     constructor(view: ViewType, model: StartPopupType) {
+        super(view, model);
         this.view = view;
         this.model = model;
     }
@@ -68,16 +70,6 @@ export default class StartPopupController implements StartPopupControllerType {
             this.redrawMiddleButton();
             this.redrawBottomButton();
         }
-    }
-
-    public resizePopup(): void {
-        this.model.width = Math.floor(this.view.width / 2.5);
-        this.model.height = this.view.width / 2.8;
-        this.model.x =
-            Math.floor((this.view.width / 3.2));
-        this.model.y =
-            Math.floor((this.view.height / 3 - this.model.height) + (this.model.height * 0.78));
-        this.redrawPopup();
     }
 
     public checkButtons(x: number, y: number): string {

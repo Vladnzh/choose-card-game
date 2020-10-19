@@ -1,21 +1,8 @@
-import { ViewType } from '../interfaces';
+import AbstractView from '../abstract/views/AbstractView';
 
-export class View implements ViewType {
-    public htmlCanvas: HTMLCanvasElement;
-    public context: CanvasRenderingContext2D;
-    public width: number;
-    public height: number;
+export class View extends AbstractView {
     public gradientColor1: string = '#fc4a1a';
     public gradientColor2: string = '#f7b733';
-
-    constructor() {
-        this.htmlCanvas = document.getElementById('root') as HTMLCanvasElement
-        this.context = this.htmlCanvas.getContext('2d');
-    }
-
-    public getCanvas():HTMLCanvasElement{
-        return this.htmlCanvas
-    }
 
     public redraw(): void {
         const grd = this.context.createLinearGradient(0, 0, this.width / 1.1, 0);
@@ -24,15 +11,6 @@ export class View implements ViewType {
         this.context.fillStyle = grd;
         this.context.fillRect(0, 0, this.width, this.height);
     }
-
-    public resizeView(): void {
-        this.htmlCanvas.width = window.innerWidth;
-        this.htmlCanvas.height = window.innerHeight;
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-        this.redraw();
-    }
-
 }
 
 export default new View();

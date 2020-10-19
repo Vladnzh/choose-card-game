@@ -1,10 +1,12 @@
-import { WinPopupControllerType, ViewType, WinPopupType } from '../interfaces';
+import AbstractPopupController from '../abstract/controllers/AbstractPopupController';
+import { ViewType, WinPopupType } from '../interfaces';
 
-export default class WinPopupController implements WinPopupControllerType {
+export default class WinPopupController extends AbstractPopupController {
     public model: WinPopupType;
     public view: ViewType;
 
     constructor(view: ViewType, model: WinPopupType) {
+        super(view, model);
         this.view = view;
         this.model = model;
     }
@@ -42,15 +44,6 @@ export default class WinPopupController implements WinPopupControllerType {
         }
     }
 
-    public resizePopup(): void {
-        this.model.width = Math.floor(this.view.width / 2.5);
-        this.model.height = this.view.width / 2.8;
-        this.model.x =
-            Math.floor((this.view.width / 3.2));
-        this.model.y =
-            Math.floor((this.view.height / 3 - this.model.height) + (this.model.height * 0.78));
-        this.redrawPopup();
-    }
 
     public checkButton(x: number, y: number): boolean {
         return y > this.model.buttonY && y < this.model.buttonY +

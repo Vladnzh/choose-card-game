@@ -1,6 +1,6 @@
-import { StartPopupType } from '../interfaces';
+import AbstractPopup from '../abstract/models/AbstractPopup';
 
-export default class StartPopup implements StartPopupType {
+export default class StartPopup extends AbstractPopup {
     public x: number;
     public y: number;
 

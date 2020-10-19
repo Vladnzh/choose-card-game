@@ -1,3 +1,4 @@
+import Popup from './abstract/models/AbstractPopup';
 import CardController from './controllers/CardController';
 import { MainController } from './controllers/MainController';
 import StartPopupController from './controllers/StartPopupController';
@@ -15,6 +16,7 @@ export type ViewType = View;
 export type CardType = Card;
 export type WinPopupType = WinPopup;
 export type StartPopupType = StartPopup;
+export type AbstractPopupType = Popup;
 
 export type SelectedСardType = {
     id: string;

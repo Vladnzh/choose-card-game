@@ -3,14 +3,18 @@ import { CardType, ImageType } from '../interfaces';
 
 export default class Card implements CardType {
     public id: string;
+
     public x: number;
     public y: number;
     public width: number;
     public height: number;
+
     public col: number;
     public row: number;
+
     public imgId: number;
     public img: HTMLImageElement;
+
     public isActive: boolean = false;
     public isLock: boolean = false;
     public inProgress: boolean = false;

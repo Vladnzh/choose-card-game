@@ -14,3 +14,9 @@ export class BUTTONS_NAME {
     public static NORMAL_BUTTON: string = 'NORMAL_BUTTON'
     public static HARD_BUTTON: string = 'HARD_BUTTON'
 }
+
+export class EVENTS_NAME {
+    public static CLICK: string = 'click'
+    public static MOUSEMOVE: string = 'mousemove'
+    public static RESIZE: string = 'resize'
+}
