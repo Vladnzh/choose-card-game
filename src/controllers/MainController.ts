@@ -26,7 +26,6 @@ export class MainController implements MainControllerType {
     protected startPopup: StartPopupControllerType;
 
     protected images: Array<ImageType> = [];
-    protected imageSources: Array<string> = [];
 
     protected cards: Array<CardControllerType> = [];
     protected selectedСards: Array<SelectedСardType> = [];
@@ -137,10 +136,10 @@ export class MainController implements MainControllerType {
     }
 
     protected createAllImages(): void {
-        this.imageSources = _.shuffle(getImagesSources());
+        const imageSources = getImagesSources();
         for (let j = 0; j < 2; j++) {
             for (let i = 0; i < this.amountCards / 2; i++) {
-                this.images.push({ imgId : i, imgSrc : this.imageSources[i] });
+                this.images.push({ imgId : i, imgSrc : imageSources[i] });
             }
         }
         this.images = _.shuffle(this.images);
@@ -157,7 +156,6 @@ export class MainController implements MainControllerType {
     protected resetGame(): void {
         this.cards = [];
         this.images = [];
-        this.imageSources = [];
         this.selectedСards = [];
         this.winPopup.model.missCount = 0;
         this.winPopup.hide();
