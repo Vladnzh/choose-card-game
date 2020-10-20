@@ -11,6 +11,10 @@ export default class CardController implements CardControllerType {
 
     public redrawCard(): void {
         this.view.context.fillStyle = this.model.color;
+        this.view.context.shadowColor = "#723d0e";
+        this.view.context.shadowBlur = 5;
+        this.view.context.shadowOffsetX = -5;
+        this.view.context.shadowOffsetY = 5;
         this.view.context.fillRect(this.model.x, this.model.y, this.model.width, this.model.height);
         if (this.model.isActive) {
             this.view.context.drawImage(this.model.img, this.model.x, this.model.y, this.model.width,
