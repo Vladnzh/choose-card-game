@@ -207,7 +207,6 @@ export class MainController implements MainControllerType {
                     TweenMax.delayedCall(this.flipDelay, () => this.selectedСards = []);
                     this.winPopup.model.missCount += 1;
                 }
-                cardController.redrawCard();
             }
         }, this);
     }
@@ -248,6 +247,7 @@ export class MainController implements MainControllerType {
                     this.animationInProgress = false;
                     cardController.model.inProgress = false;
                     if (this.checkWin() && !this.startPopup.model.isVisible) {
+                        this.view.redraw();
                         this.winPopup.show();
                     }
                 },
