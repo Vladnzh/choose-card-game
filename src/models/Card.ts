@@ -9,6 +9,11 @@ export default class Card implements CardType {
     public width: number;
     public height: number;
 
+    public shadowColor: string = '#723d0e';
+    public shadowBlur: number = 5;
+    public shadowOffsetX: number = -5;
+    public shadowOffsetY: number = 5;
+
     public col: number;
     public row: number;
 

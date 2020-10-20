@@ -216,11 +216,13 @@ export class MainController implements MainControllerType {
         this.animationInProgress = true;
         const prevX = cardController.model.x;
         const prevWidth = cardController.model.width;
+        const prevShadowOffsetX = cardController.model.shadowOffsetX;
         const duration = cardController.model.isActive ? this.animationDuration / 2 : this.animationDuration;
         TweenMax.to(cardController.model, duration, {
             inProgress : true,
             x          : cardController.model.x + cardController.model.width / 2,
             width      : 0,
+            shadowOffsetX: 0,
             onUpdate   : () => {
                 this.view.redraw();
                 this.cards.forEach((cardController) => {
@@ -235,6 +237,7 @@ export class MainController implements MainControllerType {
             TweenMax.to(cardController.model, duration, {
                 x          : prevX,
                 width      : prevWidth,
+                shadowOffsetX: prevShadowOffsetX,
                 onUpdate   : () => {
                     this.view.redraw();
                     this.cards.forEach((cardController) => {

@@ -11,10 +11,10 @@ export default class CardController implements CardControllerType {
 
     public redrawCard(): void {
         this.view.context.fillStyle = this.model.color;
-        this.view.context.shadowColor = "#723d0e";
-        this.view.context.shadowBlur = 5;
-        this.view.context.shadowOffsetX = -5;
-        this.view.context.shadowOffsetY = 5;
+        this.view.context.shadowColor = this.model.shadowColor;
+        this.view.context.shadowBlur = this.model.shadowBlur;
+        this.view.context.shadowOffsetX = this.model.shadowOffsetX;
+        this.view.context.shadowOffsetY = this.model.shadowOffsetY;
         this.view.context.fillRect(this.model.x, this.model.y, this.model.width, this.model.height);
         if (this.model.isActive) {
             this.view.context.drawImage(this.model.img, this.model.x, this.model.y, this.model.width,
@@ -31,10 +31,6 @@ export default class CardController implements CardControllerType {
         this.redrawCard();
     }
 
-    public update(): void {
-        this.model.width -= this.model.width * 1.2 / 60
-        this.model.x += this.model.x * 0.05 / 60
-    }
 
     public checkMouseOver(x: number, y: number): boolean {
         return y > this.model.y
