@@ -18,19 +18,14 @@ import WinPopupController from './WinPopupController';
 
 export class MainController implements MainControllerType {
     protected view: ViewType;
-
     private row: number;
     private col: number;
-
     protected winPopup: WinPopupControllerType;
     protected startPopup: StartPopupControllerType;
-
     protected images: Array<ImageType> = [];
-
     protected cards: Array<CardControllerType> = [];
     protected selectedСards: Array<SelectedСardType> = [];
     protected amountCards: number;
-
     protected animationDuration: number = 0.25;
     protected animationInProgress: boolean = false;
     protected flipDelay: number = 0.8;
@@ -118,9 +113,7 @@ export class MainController implements MainControllerType {
     protected createAllCards(): void {
         for (let j = 0; j < this.row; j++) {
             for (let i = 0; i < this.col; i++) {
-                let x = i * 200;
-                let y = j * 200;
-                this.createCard(x, y, i, j);
+                this.createCard(i, j);
             }
         }
     }
@@ -145,9 +138,9 @@ export class MainController implements MainControllerType {
         this.images = _.shuffle(this.images);
     }
 
-    protected createCard(x: number, y: number, col: number, row: number): void {
+    protected createCard(col: number, row: number): void {
         const image = this.images.pop();
-        const card = new Card(x, y, col, row, image);
+        const card = new Card(col, row, image);
         const cardController = new CardController(this.view, card);
         this.cards.push(cardController);
         cardController.redrawCard();
