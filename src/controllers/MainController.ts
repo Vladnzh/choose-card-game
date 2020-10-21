@@ -215,9 +215,9 @@ export class MainController implements MainControllerType {
                                     TweenMax.delayedCall(this.flipDelay, () => this.flipCard(cardController)));
                             }
                         });
+                        this.endPopup.model.mistakeCount += 1;
                     }
                     this.selectedСards = []
-                    this.endPopup.model.mistakeCount += 1;
                 }
             }
         }, this);
