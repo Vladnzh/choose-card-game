@@ -18,19 +18,23 @@ import EndPopupController from './EndPopupController';
 
 export class MainController implements MainControllerType {
     protected view: ViewType;
-    private row: number;
-    private col: number;
+
+    protected row: number;
+    protected col: number;
+
     protected endPopup: EndPopupControllerType;
     protected startPopup: StartPopupControllerType;
+
     protected images: Array<ImageType> = [];
     protected cards: Array<CardControllerType> = [];
     protected selectedСards: Array<SelectedСardType> = [];
     protected amountCards: number;
+
     protected delayedCallsFlipCard: Array<TweenMax> = [];
+    protected CardAnimation: TimelineLite;
     protected animationDuration: number = 0.25;
     protected animationInProgress: boolean = false;
     protected flipDelay: number = 0.8;
-    protected CardTimeline: TimelineLite;
 
     constructor(View: ViewType) {
         this.view = View;
@@ -227,8 +231,8 @@ export class MainController implements MainControllerType {
         const prevWidth = cardController.model.width;
         const prevShadowOffsetX = cardController.model.shadowOffsetX;
         const duration = cardController.model.isActive ? this.animationDuration / 2 : this.animationDuration;
-        this.CardTimeline = new TimelineLite;
-        this.CardTimeline
+        this.CardAnimation = new TimelineLite;
+        this.CardAnimation
             .to(cardController.model, duration, {
                 inProgress    : true,
                 x             : cardController.model.x + cardController.model.width / 2,
