@@ -1,4 +1,4 @@
-import { TweenMax } from 'gsap';
+import { TweenMax, TimelineLite } from 'gsap';
 import _ from 'lodash';
 import CardController from '../controllers/CardController';
 import {
@@ -26,9 +26,11 @@ export class MainController implements MainControllerType {
     protected cards: Array<CardControllerType> = [];
     protected selectedСards: Array<SelectedСardType> = [];
     protected amountCards: number;
+    protected delayedCallsFlipCard: Array<TweenMax> = [];
     protected animationDuration: number = 0.25;
     protected animationInProgress: boolean = false;
     protected flipDelay: number = 0.8;
+    protected CardTimeline: TimelineLite;
 
     constructor(View: ViewType) {
         this.view = View;
@@ -177,8 +179,12 @@ export class MainController implements MainControllerType {
             const target = y > cardController.model.y && y < cardController.model.y + cardController.model.height
                            && x > cardController.model.x && x < cardController.model.x + cardController.model.width;
             if (target && this.selectedСards.length !== 2) {
+                if (!this.selectedСards.length && this.animationInProgress) {
+                    return;
+                }
                 const thereIsMatch = this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
                                      this.selectedСards[0]?.id !== this.selectedСards[1]?.id;
+
                 if (thereIsMatch && this.endPopup.model.mistakeCount !== 0 && !cardController.model.isLock) {
                     this.endPopup.model.mistakeCount -= 1;
                 }
@@ -189,6 +195,7 @@ export class MainController implements MainControllerType {
                         cardController.model.isLock = true;
                     }
                 });
+
                 if (this.selectedСards.length < 2 && this.selectedСards[0]?.id !== cardController.model.id) {
                     this.selectedСards.push({ id : cardController.model.id, imgId : cardController.model.imgId });
                     if (!cardController.model.isLock && !cardController.model.isActive) {
@@ -200,11 +207,12 @@ export class MainController implements MainControllerType {
                         this.cards.forEach((cardController: CardControllerType) => {
                             if (cardController.model.id === this.selectedСards[0].id || cardController.model.id ===
                                 this.selectedСards[1].id) {
-                                TweenMax.delayedCall(this.flipDelay, () => this.flipCard(cardController));
+                                this.delayedCallsFlipCard.push(
+                                    TweenMax.delayedCall(this.flipDelay, () => this.flipCard(cardController)));
                             }
                         });
                     }
-                    TweenMax.delayedCall(this.flipDelay, () => this.selectedСards = []);
+                    this.selectedСards = []
                     this.endPopup.model.mistakeCount += 1;
                 }
             }
@@ -212,38 +220,43 @@ export class MainController implements MainControllerType {
     }
 
     protected flipCard(cardController: CardControllerType): void {
-        this.animationInProgress = true;
+        if(!this.animationInProgress){
+            this.delayedCallsFlipCard.forEach((func: TweenMax) => func.delay(0));
+        }
         const prevX = cardController.model.x;
         const prevWidth = cardController.model.width;
         const prevShadowOffsetX = cardController.model.shadowOffsetX;
         const duration = cardController.model.isActive ? this.animationDuration / 2 : this.animationDuration;
-        TweenMax.to(cardController.model, duration, {
-            inProgress : true,
-            x          : cardController.model.x + cardController.model.width / 2,
-            width      : 0,
-            shadowOffsetX: 0,
-            onUpdate   : () => {
-                this.view.redraw();
-                this.cards.forEach((cardController) => {
-                    cardController.redrawCard();
-                });
-            },
-            onComplete : () => {
-                cardController.model.isActive = !cardController.model.isActive;
-            },
-        });
-        TweenMax.delayedCall(duration, () => {
-            TweenMax.to(cardController.model, duration, {
-                x          : prevX,
-                width      : prevWidth,
-                shadowOffsetX: prevShadowOffsetX,
-                onUpdate   : () => {
+        this.CardTimeline = new TimelineLite;
+        this.CardTimeline
+            .to(cardController.model, duration, {
+                inProgress    : true,
+                x             : cardController.model.x + cardController.model.width / 2,
+                width         : 0,
+                shadowOffsetX : 0,
+                onUpdate      : () => {
+                    this.animationInProgress = true;
                     this.view.redraw();
                     this.cards.forEach((cardController) => {
                         cardController.redrawCard();
                     });
                 },
-                onComplete : () => {
+                onComplete    : () => {
+                    cardController.model.isActive = !cardController.model.isActive;
+                },
+            })
+            .to(cardController.model, duration, {
+                x             : prevX,
+                width         : prevWidth,
+                shadowOffsetX : prevShadowOffsetX,
+                onUpdate      : () => {
+                    this.animationInProgress = true;
+                    this.view.redraw();
+                    this.cards.forEach((cardController) => {
+                        cardController.redrawCard();
+                    });
+                },
+                onComplete    : () => {
                     this.animationInProgress = false;
                     cardController.model.inProgress = false;
                     if (this.checkWin() && !this.startPopup.model.isVisible) {
@@ -253,7 +266,6 @@ export class MainController implements MainControllerType {
                     }
                 },
             });
-        });
     }
 
     protected checkEndPopup(x: number, y: number, event: string): boolean {
