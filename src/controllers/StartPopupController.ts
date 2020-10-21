@@ -63,8 +63,16 @@ export default class StartPopupController extends AbstractPopupController {
 
     public redrawPopup(): void {
         if (this.model.isVisible) {
+            this.view.context.shadowColor = this.model.shadowColor;
+            this.view.context.shadowBlur = this.model.shadowBlur;
+            this.view.context.shadowOffsetX = this.model.shadowOffsetX;
+            this.view.context.shadowOffsetY = this.model.shadowOffsetY;
             this.view.context.fillStyle = this.model.color;
             this.view.context.fillRect(this.model.x, this.model.y, this.model.width, this.model.height);
+            this.view.context.shadowColor = '';
+            this.view.context.shadowBlur = 0;
+            this.view.context.shadowOffsetX = 0;
+            this.view.context.shadowOffsetY = 0;
             this.redrawText();
             this.redrawTopButton();
             this.redrawMiddleButton();

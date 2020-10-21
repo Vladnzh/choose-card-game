@@ -1,6 +1,6 @@
 import AbstractPopup from '../abstract/models/AbstractPopup';
 
-export default class WinPopup extends AbstractPopup {
+export default class EndPopup extends AbstractPopup {
     public x: number;
     public y: number;
     public width: number;
@@ -11,9 +11,14 @@ export default class WinPopup extends AbstractPopup {
     public buttonWidth: number;
     public buttonHeight: number;
 
+    public shadowColor: string = '#723d0e';
+    public shadowBlur: number = 5;
+    public shadowOffsetX: number = -5;
+    public shadowOffsetY: number = 5;
+
     public color: string = '#e3e0d4';
     public isVisible: boolean = false;
-    public missCount: number = 0;
+    public mistakeCount: number = 0;
     public winText: string = 'Congratulations!';
 
     public colorGreen: string = '#68b55b';
@@ -21,13 +26,13 @@ export default class WinPopup extends AbstractPopup {
     public colorRed: string = '#b55b5b';
 
     public getInformationColor(): string {
-        if (this.missCount < 11) {
+        if (this.mistakeCount < 11) {
             return this.colorGreen;
         }
-        if (this.missCount < 21) {
+        if (this.mistakeCount < 21) {
             return this.colorYellow;
         }
-        if (this.missCount >= 21) {
+        if (this.mistakeCount >= 21) {
             return this.colorRed;
         }
     }

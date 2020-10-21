@@ -1,11 +1,11 @@
 import AbstractPopupController from '../abstract/controllers/AbstractPopupController';
-import { ViewType, WinPopupType } from '../interfaces';
+import { ViewType, EndPopupType } from '../interfaces';
 
-export default class WinPopupController extends AbstractPopupController {
-    public model: WinPopupType;
+export default class EndPopupController extends AbstractPopupController {
+    public model: EndPopupType;
     public view: ViewType;
 
-    constructor(view: ViewType, model: WinPopupType) {
+    constructor(view: ViewType, model: EndPopupType) {
         super(view, model);
         this.view = view;
         this.model = model;
@@ -17,7 +17,7 @@ export default class WinPopupController extends AbstractPopupController {
         this.view.context.fillText(this.model.winText, this.model.x + this.model.width / 3,
                                    this.model.y + this.model.height / 4.5);
         this.view.context.fillStyle = this.model.getInformationColor();
-        this.view.context.fillText(`You made ${this.model.missCount} misses`, this.model.x + this.model.width / 3.2,
+        this.view.context.fillText(`You made ${this.model.mistakeCount} mistakes`, this.model.x + this.model.width / 3.2,
                                    this.model.y + this.model.height / 2.5);
     }
 
@@ -26,6 +26,7 @@ export default class WinPopupController extends AbstractPopupController {
         this.model.buttonY = this.model.y + this.model.height / 1.5;
         this.model.buttonWidth = this.model.width / 3;
         this.model.buttonHeight = this.model.height / 7;
+
         this.view.context.strokeStyle = '#dd8236';
         this.view.context.strokeRect(this.model.buttonX, this.model.buttonY,
                                      this.model.buttonWidth, this.model.buttonHeight);
@@ -37,8 +38,16 @@ export default class WinPopupController extends AbstractPopupController {
 
     public redrawPopup(): void {
         if (this.model.isVisible) {
+            this.view.context.shadowColor = this.model.shadowColor;
+            this.view.context.shadowBlur = this.model.shadowBlur;
+            this.view.context.shadowOffsetX = this.model.shadowOffsetX;
+            this.view.context.shadowOffsetY = this.model.shadowOffsetY;
             this.view.context.fillStyle = this.model.color;
             this.view.context.fillRect(this.model.x, this.model.y, this.model.width, this.model.height);
+            this.view.context.shadowColor = '';
+            this.view.context.shadowBlur = 0;
+            this.view.context.shadowOffsetX = 0;
+            this.view.context.shadowOffsetY = 0;
             this.redrawText();
             this.redrawButton();
         }

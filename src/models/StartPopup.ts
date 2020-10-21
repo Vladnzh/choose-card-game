@@ -19,6 +19,11 @@ export default class StartPopup extends AbstractPopup {
     public buttonHardWidth: number;
     public buttonHardHeight: number;
 
+    public shadowColor: string = '#723d0e';
+    public shadowBlur: number = 5;
+    public shadowOffsetX: number = -5;
+    public shadowOffsetY: number = 5;
+
     public width: number;
     public height: number;
     public color: string = '#e3e0d4';

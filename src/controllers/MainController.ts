@@ -6,21 +6,21 @@ import {
     ImageType,
     MainControllerType,
     SelectedСardType, StartPopupControllerType,
-    ViewType, WinPopupControllerType,
+    ViewType, EndPopupControllerType,
 } from '../interfaces';
 import Card from '../models/Card';
 import StartPopup from '../models/StartPopup';
-import WinPopup from '../models/WinPopup';
+import EndPopup from '../models/EndPopup';
 import { BUTTONS_NAME, EVENTS_NAME, getImagesSources } from '../utils';
 import View from '../views/View';
 import StartPopupController from './StartPopupController';
-import WinPopupController from './WinPopupController';
+import EndPopupController from './EndPopupController';
 
 export class MainController implements MainControllerType {
     protected view: ViewType;
     private row: number;
     private col: number;
-    protected winPopup: WinPopupControllerType;
+    protected endPopup: EndPopupControllerType;
     protected startPopup: StartPopupControllerType;
     protected images: Array<ImageType> = [];
     protected cards: Array<CardControllerType> = [];
@@ -37,7 +37,7 @@ export class MainController implements MainControllerType {
     protected initialize(): void {
         this.createStartPopup();
         this.startPopup.show();
-        this.createWinPopup();
+        this.createEndPopup();
         this.clickListener();
         this.mouseMoveListener();
         this.resizeListener();
@@ -81,7 +81,7 @@ export class MainController implements MainControllerType {
                 this.checkStartPopup(x, y, EVENTS_NAME.CLICK);
             } else {
                 this.checkCard(x, y, EVENTS_NAME.CLICK);
-                this.checkWinPopup(x, y, EVENTS_NAME.CLICK);
+                this.checkEndPopup(x, y, EVENTS_NAME.CLICK);
             }
         }, false);
     }
@@ -106,7 +106,7 @@ export class MainController implements MainControllerType {
             this.cards.forEach((cardController) => {
                 cardController.resizeCard();
             });
-            this.winPopup.resizePopup();
+            this.endPopup.resizePopup();
         }
     }
 
@@ -118,9 +118,9 @@ export class MainController implements MainControllerType {
         }
     }
 
-    protected createWinPopup(): void {
-        const winPopupModel = new WinPopup();
-        this.winPopup = new WinPopupController(this.view, winPopupModel);
+    protected createEndPopup(): void {
+        const endPopupModel = new EndPopup();
+        this.endPopup = new EndPopupController(this.view, endPopupModel);
     }
 
     protected createStartPopup(): void {
@@ -150,8 +150,8 @@ export class MainController implements MainControllerType {
         this.cards = [];
         this.images = [];
         this.selectedСards = [];
-        this.winPopup.model.missCount = 0;
-        this.winPopup.hide();
+        this.endPopup.model.mistakeCount = 0;
+        this.endPopup.hide();
         this.startPopup.show();
         this.view.resizeView();
         this.startPopup.redrawPopup();
@@ -160,11 +160,11 @@ export class MainController implements MainControllerType {
 
     protected checkMouseOver(x: number, y: number): void {
         const canvas = this.view.getCanvas();
-        const targetCard = !this.winPopup.model.isVisible
+        const targetCard = !this.endPopup.model.isVisible
                            && !this.startPopup.model.isVisible
                            && this.cards.find(cardController => cardController.checkMouseOver(x, y))
                            && this.selectedСards.length !== 2;
-        if (this.checkWinPopup(x, y, EVENTS_NAME.MOUSEMOVE) || this.checkStartPopup(x, y, EVENTS_NAME.MOUSEMOVE) ||
+        if (this.checkEndPopup(x, y, EVENTS_NAME.MOUSEMOVE) || this.checkStartPopup(x, y, EVENTS_NAME.MOUSEMOVE) ||
             targetCard) {
             canvas.style.cursor = 'pointer';
         } else {
@@ -179,8 +179,8 @@ export class MainController implements MainControllerType {
             if (target && this.selectedСards.length !== 2) {
                 const thereIsMatch = this.selectedСards[0]?.imgId === this.selectedСards[1]?.imgId &&
                                      this.selectedСards[0]?.id !== this.selectedСards[1]?.id;
-                if (thereIsMatch && this.winPopup.model.missCount !== 0 && !cardController.model.isLock) {
-                    this.winPopup.model.missCount -= 1;
+                if (thereIsMatch && this.endPopup.model.mistakeCount !== 0 && !cardController.model.isLock) {
+                    this.endPopup.model.mistakeCount -= 1;
                 }
                 this.cards.forEach((cardController: CardControllerType) => {
                     const canLock = this.selectedСards.find(
@@ -205,7 +205,7 @@ export class MainController implements MainControllerType {
                         });
                     }
                     TweenMax.delayedCall(this.flipDelay, () => this.selectedСards = []);
-                    this.winPopup.model.missCount += 1;
+                    this.endPopup.model.mistakeCount += 1;
                 }
             }
         }, this);
@@ -248,15 +248,16 @@ export class MainController implements MainControllerType {
                     cardController.model.inProgress = false;
                     if (this.checkWin() && !this.startPopup.model.isVisible) {
                         this.view.redraw();
-                        this.winPopup.show();
+                        this.endPopup.show();
+                        this.endPopup.resizePopup();
                     }
                 },
             });
         });
     }
 
-    protected checkWinPopup(x: number, y: number, event: string): boolean {
-        const target = this.winPopup.checkButton(x, y);
+    protected checkEndPopup(x: number, y: number, event: string): boolean {
+        const target = this.endPopup.checkButton(x, y);
         if (event === EVENTS_NAME.CLICK && target) {
             this.resetGame();
         }
